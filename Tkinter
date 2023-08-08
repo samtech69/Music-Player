@@ -1,0 +1,110 @@
+from tkinter import *
+from tkinter import filedialog,ttk
+import pygame.mixer  as mixer       
+import os,sys
+import pygame
+win=Tk()
+win.geometry('340x410')
+win.title('Mp3 Player')
+win.configure(bg='black')
+win.resizable(0,0)
+
+
+mixer.init()
+def play(song_name: StringVar, songs_list: Listbox, status: StringVar):
+    song_name.set(songs_list.get(ACTIVE))
+    mixer.music.load(songs_list.get(ACTIVE))
+    mixer.music.play()
+    status.set("Song PLAYING")
+
+def stop(status: StringVar):
+    mixer.music.stop()
+    status.set("Song STOPPED")
+
+def load(listbox):
+    os.chdir(filedialog.askdirectory(title='Select folder'))
+    tracks = os.listdir()
+    for track in tracks:
+        listbox.insert(END, track)
+
+def pause(status: StringVar):
+    mixer.music.pause()
+    status.set("Song PAUSED") 
+
+def resume(status: StringVar):
+    mixer.music.unpause()
+    status.set("Song RESUMED")
+
+def set_vol(val):
+    pygame.mixer.music.set_volume(float(val)/100)
+
+
+photo_play = PhotoImage(file="E:/$Python/mp3/play.png")
+photo_folder = PhotoImage(file="E:/$Python/mp3/folder.png")
+photo_stop= PhotoImage(file="E:/$Python/mp3/stop.png")
+photo_pause = PhotoImage(file="E:/$Python/mp3/pause.png")
+photo_continue = PhotoImage(file="E:/$Python/mp3/continue.png")
+
+song_frame = Frame(win, bg='#9f14db',width=338, height=50)
+song_frame.place(x=1, y=225)
+
+button_frame =Frame(win, bg='black', width=338, height=150)
+button_frame.place(x=1,y=280)
+
+listbox_frame =Frame(win, bg='black')
+listbox_frame.place(x=1, y=5)
+
+current = StringVar(win, value='')
+status = StringVar(win, value='')
+
+playlist = Listbox(listbox_frame, font=('Ariel',11,''), selectbackground='skyBlue',height=11,width=31)
+scroll_bar = Scrollbar(listbox_frame, orient=VERTICAL)
+scroll_bar.pack(side=RIGHT, fill=BOTH)
+playlist.config(yscrollcommand=scroll_bar.set)
+scroll_bar.config(command=playlist.yview)
+playlist.pack(fill=BOTH, padx=5, pady=5)
+
+z=Label(song_frame,text='Playing:', bg='#9f14db', font=('',15,'bold'))
+z.place(x=10,y=8)
+
+song_lbl= Label(song_frame, textvariable=current, bg='#9f14db', bd=1,font=("Times", 12), width=24)
+song_lbl.place(x=95, y=10)
+
+status_lbl=Label(win, textvariable=status, bg='#9f14db', font=('',5,''))
+status_lbl.place(x=270,y=260) 
+
+pause_btn = Button(button_frame,image=photo_pause,compound=LEFT, bg='black',bd=0,command=lambda: pause(status))
+pause_btn.place(x=20, y=10,height=50,width=50)
+
+stop_btn = Button(button_frame,image=photo_stop,compound=LEFT, bg='black',bd=0, command=lambda: stop(status))
+stop_btn.place(x=105, y=10,height=50,width=50)
+
+play_btn = Button(button_frame,image=photo_play,compound=LEFT, bg='black',bd=0,command=lambda: play(current, playlist, status))
+play_btn.place(x=185, y=10,height=50,width=50)
+
+continue_btn = Button(button_frame, image=photo_continue,compound=LEFT, bg='black',bd=0,command=lambda: resume(status))
+continue_btn.place(x=265, y=10,height=50,width=50)
+
+load_btn = Button(button_frame,image=photo_folder,compound=RIGHT,bg='black',bd=0, command=lambda: load(playlist))
+load_btn.place(x=80, y=75,height=50,width=50)
+
+select=Label(win,text='Load File',font=('',10,'bold'),bg='black',fg='white')
+select.place(x=10,y=370)
+      
+Name=Label(win,text='@Mp3 Player',font=('',10,''),bg='black',fg='white')
+Name.place(x=250,y=390)
+
+vol=ttk.Scale(win, from_=0, to=100,orient=VERTICAL,command=set_vol)
+vol.set(50)
+vol.place(x=290,y=2, height=200,width=49)
+
+vol_label=Label(win,text='Volume',bg='white')
+vol_label.place(x=290,y=203,width=49)
+
+up_label=Label(win,text='+',font=('',10,'bold'),fg='navyblue')
+up_label.place(x=325,y=190,height=10)
+
+down_label=Label(win,text='-',font=('',12,'bold'),fg='navyblue')
+down_label.place(x=327,y=2,height=10)
+
+win.mainloop()
