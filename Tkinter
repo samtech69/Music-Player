@@ -9,7 +9,6 @@ win.title('Mp3 Player')
 win.configure(bg='black')
 win.resizable(0,0)
 
-
 mixer.init()
 def play(song_name: StringVar, songs_list: Listbox, status: StringVar):
     song_name.set(songs_list.get(ACTIVE))
